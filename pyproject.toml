@@ -1,0 +1,16 @@
+[project]
+name = "pxt-champs"
+version = "0.1.0"
+description = "Scratch repo for the Pixeltable Quickstart"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "ipykernel>=7.3.0",
+    "pixeltable[serve]==0.7.3",
+]
+
+[[tool.pixeltable.database]]
+# The local database. vars and secrets bind the config vars a schema declares; a hosted database is
+# a second entry, named by its uri.
+# vars.media_dest = 's3://bucket/prefix'
+# secrets.openai_api_key = '...'
