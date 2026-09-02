@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "ipykernel>=7.3.0",
-    "pixeltable[serve]==0.7.3",
+    "pixeltable[serve]==0.7.4",
 ]
 
 [[tool.pixeltable.database]]

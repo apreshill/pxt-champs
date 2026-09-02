@@ -1334,7 +1334,7 @@ wheels = [
 
 [[package]]
 name = "pixeltable"
-version = "0.7.3"
+version = "0.7.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -1374,7 +1374,7 @@ dependencies = [
     { name = "tzlocal" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1c/ab/1c93c57f3484e67510273e77171d4bbeeedff900a429ec56b13635a46da6/pixeltable-0.7.3-py3-none-any.whl", hash = "sha256:8a83a100b1677a07d94b042081a0f86a3183147ad423294fe78019cd954cd3a7", size = 1269763, upload-time = "2026-08-31T20:03:31.136Z" },
+    { url = "https://files.pythonhosted.org/packages/b2/07/e64714316e5877e47fdbdb9096eb1f273f7b1fdf32fd93897ce066f84c73/pixeltable-0.7.4-py3-none-any.whl", hash = "sha256:479fb570f78f271270b78ee2fe503b78f501d4b877af54efad94d7a4e1dde66d", size = 1290763, upload-time = "2026-09-02T15:40:01.806Z" },
 ]
 
 [package.optional-dependencies]
@@ -1560,7 +1560,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "ipykernel", specifier = ">=7.3.0" },
-    { name = "pixeltable", extras = ["serve"], specifier = "==0.7.3" },
+    { name = "pixeltable", extras = ["serve"], specifier = "==0.7.4" },
 ]
 
 [[package]]
