@@ -19,9 +19,8 @@ clip = [
     "transformers",
 ]
 
-# Your hosted database. `pxt db update pxt://<your-org>:champs` builds its image from this project's
-# uv.lock and ships it. Set your org slug; the notebooks target this same URI.
+# Your hosted database. Set `name` to pxt://<your-org>:<a-db-name>: your org slug (from `pxt org list`)
+# and any database name you pick. `pxt db update` reads this entry to build and ship the image; the
+# notebooks and CLOUD_QUICKSTART target this same URI.
 [[tool.pixeltable.database]]
-name = 'pxt://your-org:champs'
-# python_version = '3.12'   # default: the interpreter running pxt
-# cpu = 0.5  memory_mb = 512  disk_gb = 10  workers = 1
+name = 'pxt://pixeltable:jam-test'
