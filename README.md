@@ -2,7 +2,8 @@
 
 Pixeltable is an OLTP database for multimodal AI. Your media, the AI outputs you derive from it, and
 your app's state live in one database that keeps them consistent as data changes. You declare a schema,
-insert data, and query it — like any database, but it runs your models and transforms for you.
+insert data, and query it — like any database, but one that stores multimodal data and orchestrates the
+models and transforms that populate it.
 
 This repo is a beta-tester quickstart for **cloud-hosted tables**: the same database, running on hosted
 infrastructure instead of your own machine, addressed by a `pxt://<your-org>:<db>` URI. Nothing for you
