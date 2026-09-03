@@ -1,26 +1,9 @@
 [project]
 name = "pxt-champs"
 version = "0.1.0"
-description = "Beta-tester quickstart for Pixeltable Cloud: cloud-hosted multimodal tables"
+description = "Beta-tester quickstart for Pixeltable cloud-hosted tables"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "ipykernel>=7.3.0",
-    "pixeltable[serve]==0.7.4",
+    "pixeltable[serve]==0.7.5",
 ]
-
-[project.optional-dependencies]
-# The optional image-search notebook (04_image_search) uses CLIP from Hugging Face.
-# This is a large install (torch is hundreds of MB) plus a ~600MB model download on first run.
-# The core path (01-03) needs none of it. Install only when you want notebook 04:
-#     uv sync --extra clip
-clip = [
-    "torch",
-    "transformers",
-]
-
-# Your hosted database. Set `name` to pxt://<your-org>:<a-db-name>: your org slug (from `pxt org list`)
-# and any database name you pick. `pxt db update` reads this entry to build and ship the image; the
-# notebooks and CLOUD_QUICKSTART target this same URI.
-[[tool.pixeltable.database]]
-name = 'pxt://pixeltable:jam-test'
