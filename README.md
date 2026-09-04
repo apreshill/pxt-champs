@@ -5,26 +5,30 @@ your app's state live in one database that keeps them consistent as data changes
 insert data, and query it — like any database, but one that stores multimodal data and orchestrates the
 models and transforms that populate it.
 
-This repo is a beta-tester quickstart for **cloud-hosted tables**: the same database, running on hosted
-infrastructure instead of your own machine, addressed by a `pxt://<your-org>:<db>` URI. Hosted, it
-becomes a database you can build an app on: serve its tables as an HTTP API, reach it from any client,
-and share one live copy across your team — always on, with no server, GPU, or vector store to run
-yourself.
+This repo is a beta-tester quickstart for **cloud-hosted tables**: the Pixeltable database you'd run
+locally, now running on hosted infrastructure and addressed by a `pxt://<your-org>:<db>` URI. Hosted, it becomes a database you can build an app on:
+
+- **serve** your tables over HTTP — built-in FastAPI routes;
+- **query and experiment** with the Pixeltable SDK and CLI — the same API as a local database;
+- **share** one live copy with your team — concurrent reads and writes.
+
+The hosted database runs on managed infrastructure that stays always on — nothing for you to provision,
+scale, or operate.
 
 ## Environment
 
-Install [uv](https://docs.astral.sh/uv/) and Python 3.11+. Pixeltable pulls ~500MB, so install ahead
-of a jam session.
+Requires **Python 3.11+** and **`pixeltable[serve]` 0.7.5** (this repo pins it). Pixeltable pulls
+~500MB, so install ahead of a jam session.
 
-For the jam session, use this repo:
+**For the jam session** — install [uv](https://docs.astral.sh/uv/), then clone this repo:
 
 ```bash
 git clone https://github.com/apreshill/pxt-champs && cd pxt-champs
 uv sync
 ```
 
-For your own app, a fresh project (any of these; `pixeltable` must be a dependency, and the project
-needs a lockfile at its root, because `pxt db update` builds the hosted image from it):
+**For your own app** — start a fresh project (any manager below; `pixeltable` must be a dependency, and
+the project needs a lockfile at its root, since `pxt db update` builds the hosted image from it):
 
 
 | manager          | commands                                                                                                                       | lockfile           |
@@ -36,7 +40,11 @@ needs a lockfile at its root, because `pxt db update` builds the hosted image fr
 
 
 Make sure `pxt` resolves to the one you installed (`which pxt`); another venv or conda base on PATH
-can shadow it. Or prefix every command with `uv run`.
+can shadow it. Confirm the version:
+
+```bash
+pxt --version    # pxt 0.7.5
+```
 
 ## API key
 
@@ -44,14 +52,16 @@ Get a key from the Cloud dashboard: https://www.pixeltable.com/dashboard
 - If you don't have an account, choose a way to sign up; if you do, you can sign in from the same page
 - Create a new key that starts with `'sk_…'`
 
-Put it in `~/.pixeltable/config.toml`:
+Store your API key one of two ways:
+
+**In a config file** — `~/.pixeltable/config.toml`:
 
 ```toml
 [pixeltable]
 api_key = 'your-api-key'
 ```
 
-Or per session: `export PIXELTABLE_API_KEY=your-api-key`. Details:
+**Per session** — `export PIXELTABLE_API_KEY=your-api-key`. Details:
 [https://docs.pixeltable.com/platform/configuration.md](https://docs.pixeltable.com/platform/configuration.md). Confirm it, and note your org slug:
 
 ```bash
@@ -72,5 +82,4 @@ uv run pxt org list    # your org slug, used in every pxt:// URI
 
 ## Links
 
-Docs [https://docs.pixeltable.com](https://docs.pixeltable.com) (any page + `.md`) · CLI [https://docs.pixeltable.com/platform/cli.md](https://docs.pixeltable.com/platform/cli.md) ·
-Dashboard [https://docs.pixeltable.com/platform/dashboard.md](https://docs.pixeltable.com/platform/dashboard.md) · Skill `npx skills add pixeltable/pixeltable-skill`
+Docs [https://docs.pixeltable.com](https://docs.pixeltable.com) · Dashboard [https://docs.pixeltable.com/platform/dashboard.md](https://docs.pixeltable.com/platform/dashboard.md)

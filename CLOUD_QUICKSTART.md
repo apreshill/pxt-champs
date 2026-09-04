@@ -20,6 +20,7 @@ name = 'pxt://<your-org>:<your-db>'
 # system_dependencies = ['ffmpeg']              # OS packages baked into the image
 # secrets.openai_api_key = 'env:OPENAI_API_KEY' # read from your env at `pxt db update`
 # workers = 1  cpu = 2.0  memory_mb = 4096  disk_gb = 50
+# include = ['app/**']  exclude = ['.venv']     # what gets packaged; default: everything git ignores is left out
 ```
 
 Add a `.gitignore` with `.venv/` so it is not packaged into the image.
@@ -96,6 +97,14 @@ pxt schema update  app.py pxt://<your-org>:<your-db>    # adds the new column (-
 pxt service update app.py pxt://<your-org>:<your-db> -f # restarts changed services
 ```
 
+`update` adds and changes, but never removes. To drop what you deleted from `app.py`, prune it (`-n`
+previews, `-f` applies):
+
+```bash
+pxt schema  prune app.py pxt://<your-org>:<your-db> -n   # preview the drops, then -f
+pxt service prune app.py pxt://<your-org>:<your-db> -n   # stops services app.py no longer declares
+```
+
 Exit codes across reconcile verbs: 0 in agreement, 2 changes pending, 3 refused (needs
 `--allow-destructive` or `-f`), 1 error.
 
@@ -103,3 +112,17 @@ Secrets for LLM apps: `secrets.* = 'env:VAR'` in the config, or
 `pxt secret set pxt://<your-org>:<your-db> OPENAI_API_KEY=sk-...`.
 
 Clean up: `pxt db stop pxt://<your-org>:<your-db>` (keeps storage), `pxt db delete ...` (irreversible).
+
+## Gotchas
+
+- **Pass the full `pxt://` URI to every `pxt db` command.** Its help says the URI can default to a
+  `db_uri` config setting, separate from your `[[tool.pixeltable.database]]` entry, so name it
+  explicitly.
+- **Declare the database in one file only.** If both `pyproject.toml` (`[[tool.pixeltable.database]]`)
+  and a `pixeltable.toml` (`[[pixeltable.database]]`) declare it, `pixeltable.toml` wins silently.
+- **`pxt db update` rebuilds the image only when it must.** It applies secrets, rebuilds the image only
+  if the lockfile, `python_version`, or `system_dependencies` changed, uploads the project archive when
+  any file changed, then resizes. The first image build takes several minutes; a later source-only edit
+  uploads in seconds.
+- **A running database keeps the secrets it started with.** After changing a secret, `pxt db stop` then
+  `pxt db start` to pick it up.

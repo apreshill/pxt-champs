@@ -1,14 +1,11 @@
 # Build a cloud-hosted Pixeltable app with your agent
 
-Fill in the brackets and hand this whole file to your coding agent. It builds and deploys an app to
-your hosted database and reports back.
-
----
-
-You are building an app and deploying it to a hosted Pixeltable database. Read `AGENTS.md` and
-`CLOUD_QUICKSTART.md` in this repo and follow the quickstart for every `pxt` command.
-Add the API reference: `npx skills add pixeltable/pixeltable-skill`. Any docs page takes a `.md`
-suffix for clean reading, e.g. https://docs.pixeltable.com/platform/cli.md.
+You are my coding agent. Build an app and deploy it to my hosted Pixeltable database. Read `AGENTS.md`
+and `CLOUD_QUICKSTART.md` in this repo and follow the quickstart for every `pxt` command.
+Add the Pixeltable skill for the schema DSL: `npx skills add pixeltable/pixeltable-skill`. The SDK API
+reference is at https://docs.pixeltable.com/sdk/latest/pixeltable (the `Table` class at
+https://docs.pixeltable.com/sdk/latest/table). Any docs page takes a `.md` suffix for clean reading,
+e.g. https://docs.pixeltable.com/platform/cli.md.
 
 ## Pick the app
 
@@ -18,14 +15,14 @@ suffix for clean reading, e.g. https://docs.pixeltable.com/platform/cli.md.
 | 2 | Search + generate images | image library + a prompt | CLIP embedding index to search by text, plus a computed column that generates a new image | CLIP + image model |
 | 3 | Audio intelligence | podcast/call audio → searchable + summarized | Whisper transcript → segments (view) → topics/summary → embedding index | Whisper + OpenAI |
 
-Build: **<app number, or describe your own>**.
+Ask me which one to build — 1, 2, 3, or my own idea — then build that.
 
 ## Step 1: set up
 
 - Ask me which environment manager to use (uv, venv, conda, poetry), then follow that option in the
   README's Environment section. Do not assume.
-- Confirm my key: `pxt config` (my `pixeltable.api_key` shows `<redacted>`). Get my org: `pxt org list`.
-- My org slug: **<your-org>**. Use it in every `pxt://` URI. Never touch a database you did not create.
+- Confirm my key with `pxt config` (`pixeltable.api_key` shows `<redacted>`), and get my org slug from
+  `pxt org list`. Use that slug in every `pxt://` URI, and never touch a database you did not create.
 
 ## Step 2: build and ship
 
