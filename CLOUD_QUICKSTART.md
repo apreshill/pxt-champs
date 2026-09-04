@@ -86,8 +86,10 @@ Edit `app.py`. For example, add a computed column to `Docs`:
     summary = pxtf.string.slice(body, 0, 80)   # a new computed column
 ```
 
-Adding a column is safe. If you *rename* one, update every reference to it too (route `outputs=`,
-other computed columns), or `app.py` fails to load with `has no attribute '<old-name>'`.
+Adding a column is safe. You cannot *alter* an existing column's definition — reconcile reports it as
+`unsupported`; to change one, drop it (`--allow-destructive`) and add it back. If you rename a column,
+also update every reference to it (route `outputs=`, other computed columns), or `app.py` fails to load
+with `has no attribute '<old-name>'`.
 
 Then ship the change and apply it:
 
