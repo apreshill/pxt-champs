@@ -48,7 +48,7 @@ pxt --version    # pxt 0.7.5
 
 ## API key
 
-Get a key from the Cloud dashboard: https://www.pixeltable.com/dashboard
+Get your Pixeltable API key from the Cloud dashboard: https://www.pixeltable.com/dashboard
 - If you don't have an account, choose a way to sign up; if you do, you can sign in from the same page
 - Create a new key that starts with `'sk_…'`
 
@@ -65,18 +65,21 @@ api_key = 'your-api-key'
 [https://docs.pixeltable.com/platform/configuration.md](https://docs.pixeltable.com/platform/configuration.md). Confirm it, and note your org slug:
 
 ```bash
-uv run pxt config      # pixeltable.api_key shows <redacted>
-uv run pxt org list    # your org slug, used in every pxt:// URI
+pxt config      # pixeltable.api_key shows <redacted>
+pxt org list    # your org slug, used in every pxt:// URI
 ```
 
 
 
 ## Where to go next
 
-- **A guided jam session, about 20 minutes:** `JAM.md` — create a hosted database, declare a table,
-  insert a row, and serve it over HTTP, one step at a time. Start here.
-- **Build your own app:** follow `CLOUD_QUICKSTART.md` yourself, or hand `AGENT_PROMPT.md` to your
-  coding agent — it works from that same quickstart.
+- **Quickstart, two minutes:** `QUICKSTART.md` — a cloud-hosted table with no database setup. Start
+  here.
+- **Go further:**
+  - **A guided jam session, about 20 minutes:** `JAM.md` — build one step by step: your own database, a
+    view, and an HTTP API.
+  - **Build your own app:** follow `CLOUD_QUICKSTART.md` yourself, or hand `AGENT_PROMPT.md` to your
+    coding agent — it works from that same quickstart.
 
 
 

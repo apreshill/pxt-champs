@@ -21,7 +21,7 @@ Ask me which one to build — 1, 2, 3, or my own idea — then build that.
 
 - Ask me which environment manager to use (uv, venv, conda, poetry), then follow that option in the
   README's Environment section. Do not assume.
-- Confirm my key with `pxt config` (`pixeltable.api_key` shows `<redacted>`), and get my org slug from
+- Confirm my Pixeltable API key with `pxt config` (`pixeltable.api_key` shows `<redacted>`), and get my org slug from
   `pxt org list`. Use that slug in every `pxt://` URI, and never touch a database you did not create.
 
 ## Step 2: build and ship

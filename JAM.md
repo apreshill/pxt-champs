@@ -8,7 +8,7 @@ We will assume you finished the README setup:
 
 - This repo is cloned locally
 - Dependencies synced with `uv sync` 
-- Your Pixeltable Cloud API key is set (in `~/.pixeltable/config.toml` or the `PIXELTABLE_API_KEY` environment variable)
+- Your Pixeltable API key is set (in `~/.pixeltable/config.toml` or the `PIXELTABLE_API_KEY` environment variable)
 
 Two kinds of code appear below:
 

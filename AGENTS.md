@@ -4,6 +4,7 @@ Pixeltable is an OLTP database for multimodal AI. Media, AI outputs, and app sta
 database at `pxt://<org>:<db>`. To build and deploy an app, follow `CLOUD_QUICKSTART.md`;
 `AGENT_PROMPT.md` has example apps to pick from.
 
-- Add the skill for the API and schema DSL: `npx skills add pixeltable/pixeltable-skill`.
+- Add the skill for the schema DSL: `npx skills add pixeltable/pixeltable-skill`. The SDK API reference
+  is at https://docs.pixeltable.com/sdk/latest/pixeltable.
 - The CLI is self-documenting: start at `pxt --help`. Docs: https://docs.pixeltable.com (any page
   takes a `.md` suffix).
