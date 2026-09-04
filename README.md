@@ -6,8 +6,10 @@ insert data, and query it — like any database, but one that stores multimodal 
 models and transforms that populate it.
 
 This repo is a beta-tester quickstart for **cloud-hosted tables**: the same database, running on hosted
-infrastructure instead of your own machine, addressed by a `pxt://<your-org>:<db>` URI. Nothing for you
-to host.
+infrastructure instead of your own machine, addressed by a `pxt://<your-org>:<db>` URI. Hosted, it
+becomes a database you can build an app on: serve its tables as an HTTP API, reach it from any client,
+and share one live copy across your team — always on, with no server, GPU, or vector store to run
+yourself.
 
 ## Environment
 
