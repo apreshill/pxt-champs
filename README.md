@@ -18,9 +18,9 @@ scale, or operate.
 ## Environment
 
 Requires **Python 3.11+** and **`pixeltable[serve]` 0.7.5** (this repo pins it). Pixeltable pulls
-~500MB, so install ahead of a jam session.
+~500MB, so install ahead of time.
 
-**For the jam session** — install [uv](https://docs.astral.sh/uv/), then clone this repo:
+**For the quickstart** — install [uv](https://docs.astral.sh/uv/), then clone this repo:
 
 ```bash
 git clone https://github.com/apreshill/pxt-champs && cd pxt-champs
@@ -71,15 +71,13 @@ pxt org list    # your org slug, used in every pxt:// URI
 
 
 
-## Where to go next
+## Pick your path
 
-- **Quickstart, two minutes:** `QUICKSTART.md` — a cloud-hosted table with no database setup. Start
-  here.
-- **Go further:**
-  - **A guided jam session, about 20 minutes:** `JAM.md` — build one step by step: your own database, a
-    view, and an HTTP API.
-  - **Build your own app:** follow `CLOUD_QUICKSTART.md` yourself, or hand `AGENT_PROMPT.md` to your
-    coding agent — it works from that same quickstart.
+- **Try it yourself** — `guides/quickstart.md`. Create a cloud database, declare a table, insert a row,
+  and serve it over HTTP. No agent, no provider API keys, no model downloads (the first build takes a
+  few minutes).
+- **Build a real app with your coding agent** — `guides/build-an-app.md`. Hand it to your agent; it
+  builds a video autocropper (a worked example) or your own app, and deploys it.
 
 
 
