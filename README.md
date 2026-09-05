@@ -76,8 +76,8 @@ pxt org list    # your org slug, used in every pxt:// URI
 - **Try it yourself** — `guides/quickstart.md`. Create a cloud database, declare a table, insert a row,
   and serve it over HTTP. No agent, no provider API keys, no model downloads (the first build takes a
   few minutes).
-- **Build a real app with your coding agent** — `guides/build-an-app.md`. Hand it to your agent; it
-  builds a video autocropper (a worked example) or your own app, and deploys it.
+- **Build a real app with your coding agent** — `guides/build-an-app.md`. A guide to building a real
+  application — a video autocropper, or your own — with your agent doing the work.
 
 
 

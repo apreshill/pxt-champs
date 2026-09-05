@@ -1,76 +1,124 @@
-# Build an app on cloud-hosted tables with your agent
+# Build a real app with your coding agent
 
-You are my coding agent. Build an application on my hosted Pixeltable database and deploy it. Read
-`AGENTS.md` in this repo and follow it for every `pxt` command. Add the Pixeltable skill for the schema
-DSL: `npx skills add pixeltable/pixeltable-skill`. The SDK API reference is at
-https://docs.pixeltable.com/sdk/latest/pixeltable.
+Build a real application with your coding agent — a video autocropper, or your own. Your agent writes
+it and runs it, first on your machine, then in the cloud. It is the same app both times; only the
+target changes, from a local name to a `pxt://` URI. Your job is to say what to build, then check the
+agent's work at each step.
 
-## Pick what to build
+## 1. Choose an app to build
 
-Ask me which:
+Your agent will need an app spec. You can use one we already wrote with one of our design partners, or
+supply your own.
 
-- **The autocropper** — a worked example, fully specified below.
-- **My own app** — ask me to describe it, then build that instead. Everything below except the
-  autocropper spec still applies.
+- **The autocropper** — insert a video and a product name, and the app returns the video reframed to a
+  target shape (say 9:16 for vertical), cropped around that product. Its full spec is in
+  `autocropper-spec.md`.
+- **Your own app** — anything that turns media into something useful: search a library of images by
+  description, transcribe and summarize calls, pull structured fields out of documents, generate images
+  from prompts.
 
-### The autocropper
+## 2. Hand the spec to your agent
 
-The autocropper reframes a video to a target aspect ratio by finding a product in it and cropping
-around that. Three inputs — the source **video**, a free-text **product** description, and the target
-**width/height ratio** (e.g. `0.5625` for 9:16 vertical) — run through five stages:
+To build the autocropper, give your agent this prompt to start:
 
-1. **Frame.** Take one representative frame, the first at t=0.
-2. **Detect.** Run a general-purpose object detector (e.g. YOLOX) over that frame, producing candidate
-   boxes with class labels and confidence scores; collapse the distinct labels into a candidate class
-   list.
-3. **Match.** Ask an LLM which detected class best matches the product description, constrained to emit
-   a single class name from that list, or `none`.
-4. **Locate and size.** Resolve the chosen class to one box — the highest-confidence detection with that
-   label — then derive a fixed crop window: center on the box's midpoint, grow whichever dimension is
-   deficient until it hits the target ratio, shrink it if it exceeds the frame, and translate it to stay
-   fully inside the frame.
-5. **Reframe.** Apply that one static window to every frame of the video, producing the reframed video.
+```
+Take a look at guides/autocropper-spec.md
 
-Model each stage as a computed column on one table, so inserting a row runs the whole chain and any
-stage can be inspected on its own. Stage 4's geometry is pure arithmetic — a `@pxt.udf`; stage 5 is a
-video transform — a Pixeltable video function or a `@pxt.udf`.
+Propose a plan for how to create a service with Pixeltable for this.
 
-## Step 1: set up
+Rules: Use the Pixeltable CLI. Use class-based schemas. Write to a single `app.py` file. Always prefer
+built-in UDFs and UDAs over custom.
 
-- Ask me which environment manager to use (uv, venv, conda, poetry), then follow that option in the
-  README's Environment section. Do not assume.
-- Confirm my Pixeltable API key with `pxt config` (`pixeltable.api_key` shows `<redacted>`), and get my
-  org slug from `pxt org list`. Use that slug in every `pxt://` URI, and never touch a database you did
-  not create.
+Read `AGENTS.md` in this repo and follow it for every `pxt` command.
 
-## Step 2: build and ship
+Add the Pixeltable skill for the schema DSL: `npx skills add pixeltable/pixeltable-skill`.
+```
 
-- Start from `pxt service example --out app.py` and keep the class-based shape (`TableModel` +
-  `FastAPIRouter`); rewrite it into the app. Do not switch to ad-hoc `create_table` scripts.
-- Model the work as computed columns on a table, and serve it with a `FastAPIRouter` route.
-- Declare the database in `pyproject.toml`, then follow AGENTS.md's deploy loop: `pxt db update -f`
-  (first build takes several minutes) → `pxt schema update` → `pxt service update -f` → `pxt service
-  list` for the URL → `curl` a route to prove it works.
-- If a computed column calls a provider (an LLM, a detector), pass the key both ways AGENTS.md shows
-  (`secrets.* = 'env:VAR'` and `pxt secret set`). Use cheap models.
-- Tell me to open `pxt dashboard` to inspect the tables and computed columns.
+## 3. Build the app
 
-## Step 3: iterate
+Review the plan. If it suits you, tell your agent to go ahead:
 
-Change `app.py`, then run the reconcile loop: `pxt schema diff` / `pxt service diff` (exit 2 = pending),
-then `update`. Adding a column is safe; you cannot alter one in place (drop it with `--allow-destructive`
-and add it back).
+```
+Now create the tables and try it with a test video.
+```
 
-## Step 4: report back to me
+Your agent writes an `app.py` — one file holding a class-based schema (a `jobs` table with a computed
+column per pipeline stage) and a `FastAPIRouter` with insert, update, and query routes over it. It then
+runs the CLI to create the tables and start the service against a **local** target (a path like
+`/dicer`, not a `pxt://` URI). Local runs need no image build, so this is instant. When it finishes,
+check its work.
 
-- What you built: the tables, computed columns, endpoints.
-- The live service URL and one `curl` call that works, with its output.
-- Anything that errored, surprised you, or contradicted the docs, with the exact command and output.
-  Be honest; a run where things broke is more useful than a tidy summary that hides it.
+## 4. Run it on your machine
 
-## Rules
+All local, no cloud, no build. Look at what the agent wrote:
 
-- Only my org and the key in `~/.pixeltable/config.toml`. Do not create or use any other org.
-- Non-interactive only: `pxt db update` and `pxt service update` prompt, so always pass `-f`. No
-  editors, no `login` flows. Skip and tell me if a step needs interactive input.
-- You are a user of the released `pixeltable` 0.7.5. Report bugs, do not patch its source.
+```bash
+cat app.py
+```
+
+Apply the schema — the `schema` verbs touch only the tables:
+
+```bash
+pxt schema diff   app.py /dicer       # preview the tables
+pxt schema update app.py /dicer       # create them
+pxt ls /dicer                         # they're there
+```
+
+Then start the service — the `service` verbs touch only the routes over those tables:
+
+```bash
+pxt service diff   app.py /dicer      # preview the service (errors for now — a bug being fixed)
+pxt service update app.py /dicer -f   # start the service
+```
+
+You now have local endpoints. Open the service's `/docs` in a browser to try a route, or post a video
+and get the reframed result back. Fix anything here, locally, before the cloud.
+
+## 5. Deploy the same app to the cloud
+
+Same `app.py`, same commands — only the target changes, from `/dicer` to your cloud database's URI.
+Applying the schema errors the first time: your app's custom UDFs aren't in the hosted image yet.
+`pxt db update` rolls the image to include them (several minutes), and then the schema applies:
+
+```bash
+URI=pxt://pixeltable:mk-demoday/dicer    # your cloud database, and a path you pick
+
+pxt schema diff   app.py $URI            # same as local, cloud target
+pxt schema update app.py $URI            # errors: your custom UDFs aren't in the hosted image yet
+pxt db update     $URI                    # rolls the image to include your UDFs (several minutes)
+pxt schema update app.py $URI            # now it applies
+
+pxt ls       $URI                        # the tables are there
+pxt cd       $URI                        # make the cloud database your working location
+pxt describe jobs                        # inspect a table (relative path, after cd)
+```
+
+Serving in the cloud is the same two commands as on your machine — start the service, then get its
+public URL. This hits the same service bug being fixed, so it wasn't part of the live run; once the fix
+lands, these give you a running cloud service:
+
+```bash
+pxt service update app.py $URI -f
+pxt service list $URI                    # prints the https://... service URL
+```
+
+Then open that URL's `/docs`, or post a video from anywhere — the same app, on your machine and in the
+cloud.
+
+## 6. Insert a video and see the rows
+
+Ask your agent to run the pipeline on a test video:
+
+```
+Insert a test video, run the pipeline, and show me the rows.
+```
+
+The database runs every stage — detect, match, crop, reframe — and fills in the computed columns. See
+the rows for yourself:
+
+```bash
+pxt rows /dicer/jobs    # the computed values for each job
+pxt dashboard           # watch the pipeline run, and play the reframed video
+```
+
+A real video in, a reframed video out, every stage visible as its own column.

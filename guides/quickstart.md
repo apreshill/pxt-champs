@@ -211,4 +211,4 @@ The response is the row you inserted, with the computed columns filled in by the
 over HTTP. From one schema, the same computed columns reach you three ways: the SDK, the CLI, and now
 this API.
 
-To build a real application, hand `build-an-app.md` to your coding agent.
+To build a real application with your coding agent, see `build-an-app.md`.
