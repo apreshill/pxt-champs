@@ -9,9 +9,9 @@ This assumes you finished the README setup: this repo cloned, dependencies insta
 Pixeltable API key set (in `~/.pixeltable/config.toml` or the `PIXELTABLE_API_KEY` environment
 variable).
 
-The commands below use `uv run`, which runs a command in this project's virtual environment without
-activating a shell first. On another environment manager, activate your environment and drop the
-`uv run`.
+The commands below assume the environment from the README setup is active (`source .venv/bin/activate`
+for this repo). Then `pxt` and `python` are the ones that project installed. A new shell needs that
+`source` again.
 
 Two kinds of code appear below:
 
@@ -23,8 +23,8 @@ One name is yours to fill in — `<your-org>`, your org slug. The rest are examp
 Check your key, and note your org slug (you use it below):
 
 ```bash
-uv run pxt config      # pixeltable.api_key shows <redacted>
-uv run pxt org list    # the first word is your org slug; you put it in the database name in step 2
+pxt config      # pixeltable.api_key shows <redacted>
+pxt org list    # the first word is your org slug; you put it in the database name in step 2
 ```
 
 ## Terms
@@ -59,8 +59,8 @@ A schema is a file that declares your tables and their columns: some are mutable
 others the database computes from the schema. The example command writes a starter one:
 
 ```bash
-uv run pxt schema example                            # print a full example to read
-uv run pxt schema example --brief --out schema.py    # --brief: minimal; --out: write to schema.py
+pxt schema example                            # print a full example to read
+pxt schema example --brief --out schema.py    # --brief: minimal; --out: write to schema.py
 ```
 
 Open `schema.py`:
@@ -71,6 +71,7 @@ class Docs(TableModel, name='docs'):
     title: pxt.String                         # a stored column
     body: pxt.String | None                   # a stored column that may be null
     title_upper = pxtf.string.upper(title)    # a computed column: an assignment, not an annotation
+
 
 class Titled(TableModel, name='titled', base=Docs.where(Docs.title != '')):
     headline = Docs.title_upper + '!'         # a view of Docs, filtered by its base= query
@@ -93,7 +94,7 @@ the database entry there, under `[[tool.pixeltable.database]]`. (With no pyproje
 standalone `pixeltable.toml` instead.)
 
 ```bash
-uv run pxt init
+pxt init
 ```
 
 Open pyproject.toml. `pxt init` appended an entry with no name, which is the local database. Add a
@@ -110,8 +111,8 @@ This creates the database and builds its hosted image from your project's lockfi
 dependencies into the image, so the first build takes several minutes.
 
 ```bash
-uv run pxt db diff   pxt://<your-org>:champs       # read-only: shows the create plan
-uv run pxt db update pxt://<your-org>:champs -f    # applies it; -f skips the confirmation prompt
+pxt db diff   pxt://<your-org>:champs       # read-only: shows the create plan
+pxt db update pxt://<your-org>:champs -f    # applies it; -f skips the confirmation prompt
 ```
 
 `db diff` exits 2 when there is something to apply. That is the preview, not a failure. The first time, the plan
@@ -132,14 +133,14 @@ package changed.
 Confirm the database is live. The first line shows the name and `AVAILABLE`:
 
 ```bash
-uv run pxt db status pxt://<your-org>:champs
+pxt db status pxt://<your-org>:champs
 ```
 
 ## 4. Create the tables
 
 ```bash
-uv run pxt schema diff   schema.py pxt://<your-org>:champs    # read-only: what update will create
-uv run pxt schema update schema.py pxt://<your-org>:champs    # creates the tables
+pxt schema diff   schema.py pxt://<your-org>:champs    # read-only: what update will create
+pxt schema update schema.py pxt://<your-org>:champs    # creates the tables
 ```
 
 `schema update` prints:
@@ -152,8 +153,8 @@ created   pxt://<your-org>:champs/titled
 Confirm the tables and their columns:
 
 ```bash
-uv run pxt ls --tree pxt://<your-org>:champs
-uv run pxt describe   pxt://<your-org>:champs/docs
+pxt ls --tree pxt://<your-org>:champs
+pxt describe   pxt://<your-org>:champs/docs
 ```
 
 ## 5. Insert a row
@@ -171,13 +172,13 @@ print(docs.select(docs.title, docs.title_upper).collect())
 ```
 
 ```bash
-uv run python insert.py
+python insert.py
 ```
 
 It prints the row with the computed `title_upper='HELLO WORLD'`. Or read the rows from the CLI:
 
 ```bash
-uv run pxt rows pxt://<your-org>:champs/docs
+pxt rows pxt://<your-org>:champs/docs
 ```
 
 ## 6. Browse the table
@@ -185,7 +186,7 @@ uv run pxt rows pxt://<your-org>:champs/docs
 Open the dashboard to browse the table and its computed column.
 
 ```bash
-uv run pxt dashboard
+pxt dashboard
 ```
 
 ## 7. Serve a table as an API
@@ -194,7 +195,7 @@ A **service** turns a table into an HTTP API: routes clients call to insert or q
 network, without the SDK. `pxt service example` writes an app.py with a table plus a service:
 
 ```bash
-uv run pxt service example --out app.py    # a table and an `ingest` service
+pxt service example --out app.py    # a table and an `ingest` service
 ```
 
 app.py declares its own table, also named `docs`, which collides with the `docs` you built in steps
@@ -210,10 +211,10 @@ project files. Upload them before you create the table. This does not rebuild th
 dependencies did not change.
 
 ```bash
-uv run pxt db update     pxt://<your-org>:champs -f
-uv run pxt schema update app.py pxt://<your-org>:champs
-uv run pxt service update app.py pxt://<your-org>:champs -f    # -f skips the confirmation prompt
-uv run pxt service list  pxt://<your-org>:champs               # prints the service URL and routes
+pxt db update     pxt://<your-org>:champs -f
+pxt schema update app.py pxt://<your-org>:champs
+pxt service update app.py pxt://<your-org>:champs -f    # -f skips the confirmation prompt
+pxt service list  pxt://<your-org>:champs               # prints the service URL and routes
 ```
 
 Copy the `POST /docs` URL from that output and call it. The host is `https://<your-org>-champs.svc.pxt.run`

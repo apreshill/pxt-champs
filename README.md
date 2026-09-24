@@ -17,7 +17,7 @@ scale, or operate.
 
 ## Environment
 
-Requires **Python 3.11+** and **`pixeltable[serve]` 0.7.9** (this repo pins it). Pixeltable pulls
+Requires **Python 3.11+** and **`pixeltable[serve]` 0.7.10** (this repo pins it). Pixeltable pulls
 ~500MB, so install ahead of time.
 
 **For the quickstart** — install [uv](https://docs.astral.sh/uv/), then clone this repo:
@@ -25,7 +25,10 @@ Requires **Python 3.11+** and **`pixeltable[serve]` 0.7.9** (this repo pins it).
 ```bash
 git clone https://github.com/apreshill/pxt-champs && cd pxt-champs
 uv sync
+source .venv/bin/activate
 ```
+
+That activates this project's environment in the current shell, so `pxt` and `python` are the ones just installed. A new shell needs `source .venv/bin/activate` again.
 
 **For your own app** — start a fresh project (any manager below; `pixeltable` must be a dependency, and
 the project needs a lockfile at its root, since `pxt db update` builds the hosted image from it):
@@ -33,7 +36,7 @@ the project needs a lockfile at its root, since `pxt db update` builds the hoste
 
 | manager          | commands                                                                                                                       | lockfile           |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------ |
-| uv (recommended) | `uv init --bare && uv add 'pixeltable[serve]'`                                                                                 | `uv.lock`          |
+| uv (recommended) | `uv init --bare && uv add 'pixeltable[serve]' && source .venv/bin/activate`                                                    | `uv.lock`          |
 | venv + pip       | `python3 -m venv .venv && source .venv/bin/activate && pip install 'pixeltable[serve]' && pip freeze > requirements.txt`       | `requirements.txt` |
 | conda            | `conda create -n app python=3.12 -y && conda activate app && pip install 'pixeltable[serve]' && pip freeze > requirements.txt` | `requirements.txt` |
 
@@ -42,7 +45,7 @@ Make sure `pxt` resolves to the one you installed (`which pxt`); another venv or
 can shadow it. Confirm the version:
 
 ```bash
-pxt --version    # pxt 0.7.9
+pxt --version    # pxt 0.7.10
 ```
 
 ## API key

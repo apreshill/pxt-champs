@@ -37,4 +37,4 @@ around that. Three inputs — the source **video**, a free-text **product** desc
 - Only my org and the key in `~/.pixeltable/config.toml`. Do not create or use any other org.
 - Non-interactive only: `pxt service update` and `pxt db update` prompt, so always pass `-f`. No editors,
   no `login` flows. Skip and tell me if a step needs interactive input.
-- You are a user of the released `pixeltable` 0.7.9. Report bugs, do not patch its source.
+- You are a user of the released `pixeltable` 0.7.10. Report bugs, do not patch its source.
