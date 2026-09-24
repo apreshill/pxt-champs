@@ -24,7 +24,7 @@ Check your key, and note your org slug (you use it below):
 
 ```bash
 uv run pxt config      # pixeltable.api_key shows <redacted>
-uv run pxt org list    # prints your org slug; you put it in the database name in step 2
+uv run pxt org list    # the first word is your org slug; you put it in the database name in step 2
 ```
 
 ## Terms
@@ -38,7 +38,7 @@ pxt://<org>[:<db>][/<path>][:<version>]
 | part | required | what it names |
 |------|----------|---------------|
 | `<org>` | yes | your org slug, from `pxt org list` |
-| `<db>` | no | a database you name. Without it, `pxt://<org>` names the org (`pxt db list pxt://<org>`). |
+| `<db>` | no | a database you name. Without it, `pxt://<org>` names the org (`pxt org status`). `pxt db list` prints every database your key reaches, and it takes no URI. |
 | `<path>` | no | a table or view in the catalog, nesting like `kb/docs`. Without it, `pxt://<org>:<db>` names the catalog root. |
 | `<version>` | no | a table's version, bumped on every write. Append `:<n>` to read version n; without it, the latest. |
 
@@ -67,12 +67,13 @@ Open `schema.py`:
 
 ```python
 class Docs(TableModel, name='docs'):
-    title: pxt.String
-    body: pxt.String | None
-    title_upper = pxtf.string.upper(title)              # computed from title
+    id = pxt.Column(value=pxtf.uuid.uuid7(), primary_key=True)  # a generated primary key
+    title: pxt.String                         # a stored column
+    body: pxt.String | None                   # a stored column that may be null
+    title_upper = pxtf.string.upper(title)    # a computed column: an assignment, not an annotation
 
 class Titled(TableModel, name='titled', base=Docs.where(Docs.title != '')):
-    headline = Docs.title_upper + '!'                   # a view of docs
+    headline = Docs.title_upper + '!'         # a view of Docs, filtered by its base= query
 ```
 
 A table's address has three parts, each from a different place:
@@ -95,8 +96,8 @@ standalone `pixeltable.toml` instead.)
 uv run pxt init
 ```
 
-Open pyproject.toml and set that entry's `name` to your org slug (from step 1) and a database name
-you pick:
+Open pyproject.toml. `pxt init` appended an entry with no name, which is the local database. Add a
+`name` line so that entry is your hosted database. Use your org slug and a database name you pick:
 
 ```toml
 [[tool.pixeltable.database]]
@@ -113,17 +114,25 @@ uv run pxt db diff   pxt://<your-org>:champs       # read-only: shows the create
 uv run pxt db update pxt://<your-org>:champs -f    # applies it; -f skips the confirmation prompt
 ```
 
-It ends with:
+`db diff` exits 2 when there is something to apply. That is the preview, not a failure. The first time, the plan
+says the database will be created, the image will be rebuilt, and the project will be uploaded:
 
 ```
-= pxt://<your-org>:champs   applied  AVAILABLE
++ pxt://<your-org>:champs      will be created  absent
+    the image will be rebuilt from the project environment  [additive]
+    the project will be uploaded  [additive]
+
+Plan: 2 change(s), 0 destructive
 ```
 
-Confirm the database is live:
+`db update` does that work. The image rebuild is the slow part, and the first one takes several minutes.
+Later updates upload changed files without a rebuild, unless a dependency, the Python version, or a system
+package changed.
+
+Confirm the database is live. The first line shows the name and `AVAILABLE`:
 
 ```bash
 uv run pxt db status pxt://<your-org>:champs
-uv run pxt db status pxt://<your-org>:champs --json    # --json: "state": "AVAILABLE"
 ```
 
 ## 4. Create the tables
@@ -149,8 +158,9 @@ uv run pxt describe   pxt://<your-org>:champs/docs
 
 ## 5. Insert a row
 
-The CLI reconciles and inspects tables, but it cannot write rows — that is the SDK's job. Save this as
-`insert.py`, set `<your-org>`, and run it. The database computes `title_upper` and stores it.
+The CLI reconciles and inspects tables, but it cannot write rows. That is the SDK's job. Save this as
+`insert.py`, set `<your-org>`, and run it. You do not pass `id`. The database generates it, computes
+`title_upper`, and stores both.
 
 ```python
 import pixeltable as pxt
@@ -189,26 +199,37 @@ uv run pxt service example --out app.py    # a table and an `ingest` service
 
 app.py declares its own table, also named `docs`, which collides with the `docs` you built in steps
 1–4. Rename it: in app.py, change `name='docs'` to `name='submissions'`. The service is named `ingest`,
-with two routes over `submissions`: `POST /docs` inserts a row and returns its computed columns, and
-`POST /titles` returns the computed columns for a title without storing a row.
+with three routes over `submissions`:
 
-Apply the schema, then start the service:
+- `POST /docs` inserts a row from `title` and `body`, and returns the generated `id` plus `title_upper` and `summary`.
+- `POST /docs/update` matches a row by `id` and rewrites `title`.
+- `POST /titles` returns `title_upper` for a title without storing a row.
+
+`app.py` defines its own function, `excerpt`, and the hosted database runs that function from the
+project files. Upload them before you create the table. This does not rebuild the image, because the
+dependencies did not change.
 
 ```bash
-uv run pxt schema  update app.py pxt://<your-org>:champs
+uv run pxt db update     pxt://<your-org>:champs -f
+uv run pxt schema update app.py pxt://<your-org>:champs
 uv run pxt service update app.py pxt://<your-org>:champs -f    # -f skips the confirmation prompt
 uv run pxt service list  pxt://<your-org>:champs               # prints the service URL and routes
 ```
 
-Copy the `POST /docs` URL from that output and call it:
+Copy the `POST /docs` URL from that output and call it. The host is `https://<your-org>-champs.svc.pxt.run`
+and the insert path is `/ingest/docs`:
 
 ```bash
 curl -X POST https://<your-org>-champs.svc.pxt.run/ingest/docs \
-  -H 'Content-Type: application/json' -d '{"doc_id": 1, "title": "hello", "body": null}'
+  -H 'Content-Type: application/json' -d '{"title": "hello", "body": null}'
 ```
 
-The response is the row you inserted, with the computed columns filled in by the database and returned
-over HTTP. From one schema, the same computed columns reach you three ways: the SDK, the CLI, and now
-this API.
+The response is the route's outputs, filled in by the database:
+
+```json
+{"id": "<generated>", "title_upper": "HELLO", "summary": "hello"}
+```
+
+From one schema, the same computed columns reach you three ways: the SDK, the CLI, and now this API.
 
 To build a real application with your coding agent, see `build-an-app.md`.

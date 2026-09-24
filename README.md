@@ -9,7 +9,7 @@ This repo is a beta-tester quickstart for **cloud-hosted tables**: the Pixeltabl
 locally, now running on hosted infrastructure and addressed by a `pxt://<your-org>:<db>` URI. Hosted, it becomes a database you can build an app on:
 
 - **serve** your tables over HTTP — built-in FastAPI routes;
-- **query and experiment** with the Pixeltable SDK and CLI — the same API as a local database;
+- **query and experiment** with the Pixeltable SDK, CLI, and dashboard — the same as a local database;
 - **share** one live copy with your team — concurrent reads and writes.
 
 The hosted database runs on managed infrastructure that stays always on — nothing for you to provision,
@@ -17,7 +17,7 @@ scale, or operate.
 
 ## Environment
 
-Requires **Python 3.11+** and **`pixeltable[serve]` 0.7.5** (this repo pins it). Pixeltable pulls
+Requires **Python 3.11+** and **`pixeltable[serve]` 0.7.9** (this repo pins it). Pixeltable pulls
 ~500MB, so install ahead of time.
 
 **For the quickstart** — install [uv](https://docs.astral.sh/uv/), then clone this repo:
@@ -36,14 +36,13 @@ the project needs a lockfile at its root, since `pxt db update` builds the hoste
 | uv (recommended) | `uv init --bare && uv add 'pixeltable[serve]'`                                                                                 | `uv.lock`          |
 | venv + pip       | `python3 -m venv .venv && source .venv/bin/activate && pip install 'pixeltable[serve]' && pip freeze > requirements.txt`       | `requirements.txt` |
 | conda            | `conda create -n app python=3.12 -y && conda activate app && pip install 'pixeltable[serve]' && pip freeze > requirements.txt` | `requirements.txt` |
-| poetry           | `poetry init -n && poetry add 'pixeltable[serve]'`                                                                             | `poetry.lock`      |
 
 
 Make sure `pxt` resolves to the one you installed (`which pxt`); another venv or conda base on PATH
 can shadow it. Confirm the version:
 
 ```bash
-pxt --version    # pxt 0.7.5
+pxt --version    # pxt 0.7.9
 ```
 
 ## API key

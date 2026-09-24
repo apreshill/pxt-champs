@@ -5,5 +5,5 @@ description = "Beta-tester quickstart for Pixeltable cloud-hosted tables"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "pixeltable[serve]==0.7.5",
+    "pixeltable[serve]==0.7.9",
 ]

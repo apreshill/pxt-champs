@@ -67,7 +67,7 @@ pxt ls /dicer                         # they're there
 Then start the service — the `service` verbs touch only the routes over those tables:
 
 ```bash
-pxt service diff   app.py /dicer      # preview the service (errors for now — a bug being fixed)
+pxt service diff   app.py /dicer      # preview the routes; exit 2 means it would start the service
 pxt service update app.py /dicer -f   # start the service
 ```
 
@@ -76,30 +76,41 @@ and get the reframed result back. Fix anything here, locally, before the cloud.
 
 ## 5. Deploy the same app to the cloud
 
-Same `app.py`, same commands — only the target changes, from `/dicer` to your cloud database's URI.
-Applying the schema errors the first time: your app's custom UDFs aren't in the hosted image yet.
-`pxt db update` rolls the image to include them (several minutes), and then the schema applies:
+Same `app.py`. The commands split across two addresses. `pxt db` takes the database URI, `pxt://<org>:<db>`,
+and it rejects a URI that also has a catalog path. `pxt schema` and `pxt service` take that path, which is
+the database URI plus a directory you pick, such as `/dicer`.
+
+`pxt db update` creates the database if it does not exist yet, uploads the project files, and rebuilds the
+image only when the Python environment changed. The environment is the lockfile, the Python version, and
+any system packages. The first image build takes several minutes. A later edit to `app.py` is an upload,
+and it does not rebuild the image.
+
+Do this before `schema update`. The hosted database runs your functions from those uploaded files. If you
+skip the upload, `service diff` says the database has to change first and names `pxt db update` as the next
+command.
 
 ```bash
-URI=pxt://pixeltable:mk-demoday/dicer    # your cloud database, and a path you pick
+DB=pxt://<your-org>:<db>                 # the hosted database
+PATH=$DB/dicer                           # a catalog directory you pick
 
-pxt schema diff   app.py $URI            # same as local, cloud target
-pxt schema update app.py $URI            # errors: your custom UDFs aren't in the hosted image yet
-pxt db update     $URI                    # rolls the image to include your UDFs (several minutes)
-pxt schema update app.py $URI            # now it applies
+pxt db diff   $DB                        # preview; exit 2 means there is something to apply
+pxt db update $DB -f                     # create, upload, and build the image if the environment changed
 
-pxt ls       $URI                        # the tables are there
-pxt cd       $URI                        # make the cloud database your working location
+pxt schema diff   app.py $PATH           # same preview as local, cloud target
+pxt schema update app.py $PATH           # create the tables
+
+pxt ls       $PATH                       # the tables are there
+pxt cd       $PATH                       # make that directory your working location
 pxt describe jobs                        # inspect a table (relative path, after cd)
 ```
 
-Serving in the cloud is the same two commands as on your machine — start the service, then get its
-public URL. This hits the same service bug being fixed, so it wasn't part of the live run; once the fix
-lands, these give you a running cloud service:
+Serving in the cloud is the same two commands as on your machine. Start the service, then read its
+public URL:
 
 ```bash
-pxt service update app.py $URI -f
-pxt service list $URI                    # prints the https://... service URL
+pxt service diff   app.py $PATH          # preview; exit 2 means it would start the service
+pxt service update app.py $PATH -f
+pxt service list   $PATH                 # prints the https://... service URL
 ```
 
 Then open that URL's `/docs`, or post a video from anywhere — the same app, on your machine and in the
@@ -117,8 +128,9 @@ The database runs every stage — detect, match, crop, reframe — and fills in 
 the rows for yourself:
 
 ```bash
-pxt rows /dicer/jobs    # the computed values for each job
-pxt dashboard           # watch the pipeline run, and play the reframed video
+pxt rows /dicer/jobs                         # local
+pxt rows pxt://<your-org>:<db>/dicer/jobs    # the same table in the cloud
+pxt dashboard                                # watch the pipeline run, and play the reframed video
 ```
 
 A real video in, a reframed video out, every stage visible as its own column.

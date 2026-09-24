@@ -19,7 +19,7 @@ around that. Three inputs — the source **video**, a free-text **product** desc
 
 ## Set up
 
-- Ask me which environment manager to use (uv, venv, conda, poetry), then follow that option in the
+- Ask me which environment manager to use (uv, venv, conda), then follow that option in the
   README's Environment section. Do not assume.
 - Confirm my Pixeltable API key with `pxt config` (`pixeltable.api_key` shows `<redacted>`), and get my
   org slug from `pxt org list`. Use that slug in every `pxt://` URI, and never touch a database you did
@@ -37,4 +37,4 @@ around that. Three inputs — the source **video**, a free-text **product** desc
 - Only my org and the key in `~/.pixeltable/config.toml`. Do not create or use any other org.
 - Non-interactive only: `pxt service update` and `pxt db update` prompt, so always pass `-f`. No editors,
   no `login` flows. Skip and tell me if a step needs interactive input.
-- You are a user of the released `pixeltable` 0.7.5. Report bugs, do not patch its source.
+- You are a user of the released `pixeltable` 0.7.9. Report bugs, do not patch its source.

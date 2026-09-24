@@ -1757,7 +1757,7 @@ wheels = [
 
 [[package]]
 name = "pixeltable"
-version = "0.7.5"
+version = "0.7.9"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -1799,7 +1799,7 @@ dependencies = [
     { name = "tzlocal" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/21/ed/9ea2d68ad5e8c83030e2a96f2bbcd0d4c1445babec75b848925c07fbf79d/pixeltable-0.7.5-py3-none-any.whl", hash = "sha256:c551025dcd671300897f79f40aee176ee2040e94a06db5761d001c5b12560de3", size = 1287730, upload-time = "2026-09-03T20:35:19.958Z" },
+    { url = "https://files.pythonhosted.org/packages/c7/a6/fe0620022c77dd5841f972852c631cdd623373b7c483d7ec008f09f61ebb/pixeltable-0.7.9-py3-none-any.whl", hash = "sha256:1ef0a671b17be8f91cb07b9f773611f7637254eba502c1cbcb6d12824c6d1771", size = 1309697, upload-time = "2026-09-23T19:42:29.006Z" },
 ]
 
 [package.optional-dependencies]
@@ -2103,7 +2103,7 @@ dependencies = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pixeltable", extras = ["serve"], specifier = "==0.7.5" }]
+requires-dist = [{ name = "pixeltable", extras = ["serve"], specifier = "==0.7.9" }]
 
 [[package]]
 name = "pyarrow"
