@@ -26,9 +26,9 @@ Follow the phases in `AGENTS.md`. Do phase 2 before phase 3. Stop at the end of 
 
 ## Report back to me
 
-After phase 2, report the local URL from `pxt service list`, the curl with no key, and the rows.
+After phase 2, report the local URL from `pxt service list`, the curl with no key, the rows, and the file path or URL of the cropped video. I open that path to watch it.
 
-After phase 3, report the cloud URL from `pxt service list`, the hosted rows, and the curl. That curl needs `X-api-key`. If I have not given you a key, show the curl with a placeholder and say the call was not made.
+After phase 3, report the cloud URL from `pxt service list`, the hosted rows, the curl, and the URL of the cropped video in that response. That curl needs `X-api-key`. If I have not given you a key, show the curl with a placeholder and say the call was not made.
 
 Also report what you built, and anything that errored or contradicted these docs, with the exact command and output.
 
@@ -36,4 +36,4 @@ Also report what you built, and anything that errored or contradicted these docs
 
 - Only the org from `pxt org list`. Do not create another org.
 - No editors. `pxt login`, and the API key for the hosted curl, are the steps that need me. Skip and tell me if any other step needs interactive input.
-- You are a user of the released `pixeltable` 0.7.10. Report bugs, do not patch its source.
+- You are a user of the released `pixeltable` 0.7.12. Report bugs, do not patch its source.

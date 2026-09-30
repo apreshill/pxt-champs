@@ -52,9 +52,12 @@ Read the row back:
 
 ```bash
 pxt rows /hello/docs
+pxt dashboard
 ```
 
-You can stop here. You have seen what happens when you send a title. The rest puts this same `app.py` on a hosted database.
+`pxt dashboard` prints a URL on this machine and opens it. In the sidebar, open the directory `hello`, then the table `docs`. You see the title you sent.
+
+You can stop here. You have called the service and seen the row. The rest puts this same `app.py` on a hosted database.
 
 ## 3. Sign in
 
@@ -135,7 +138,7 @@ print(docs.select(docs.title, docs.title_upper).collect())
 python insert.py
 ```
 
-The result includes `Hello` and `HELLO`. You can also insert from the [Cloud dashboard](https://www.pixeltable.com/dashboard).
+The result includes `Hello` and `HELLO`. Open the table `docs` on the [Cloud dashboard](https://www.pixeltable.com/dashboard) to see that row. You can also insert the row from that page.
 
 ## 8. Call the hosted service
 

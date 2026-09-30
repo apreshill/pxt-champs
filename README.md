@@ -16,7 +16,7 @@ You see that response on your own machine first. That call needs no account and 
 
 ## Environment
 
-You need Python 3.11 or newer, and `pixeltable[serve]` 0.7.10. This repo pins that version. The install is about 500MB, so do it before you start the guide.
+You need Python 3.11 or newer, and `pixeltable[serve]` 0.7.12. This repo pins that version. The install is about 500MB, so do it before you start the guide.
 
 For the quickstart, install [uv](https://docs.astral.sh/uv/), then clone this repo:
 
@@ -41,7 +41,7 @@ For your own app, start a fresh project. Any manager in the table works. `pixelt
 Make sure `pxt` resolves to the one you installed (`which pxt`). Another venv or conda base on PATH can shadow it. Confirm the version.
 
 ```bash
-pxt --version    # pxt 0.7.10
+pxt --version    # pxt 0.7.12
 ```
 
 ## Sign in
@@ -71,7 +71,7 @@ Create an API key only when a program calls the hosted URL. The quickstart does 
 ## Pick your path
 
 - **Try it yourself.** `guides/quickstart.md` gets the response above from your machine, then deploys the same app to `main`. You do not need a model provider key.
-- **Build a real app with your coding agent.** `guides/build-an-app.md` is a video autocropper, or your own app. Do the quickstart first. Your agent does the work. You are working toward a URL that returns a cropped video.
+- **Build a real app with your coding agent.** `guides/build-an-app.md` is a video autocropper, or your own app. Do the quickstart first. Your agent does the work. You call a URL on your machine, open the cropped video from that response, and play the same video in the dashboard. Then you deploy that app.
 
 ## Links
 

@@ -22,7 +22,7 @@ Do not edit files. Do not run `pxt`. Stop after the plan.
 
 Build and run on this machine only. The target is a local catalog path, `/crop`, not a `pxt://` URI.
 
-1. Install Pixeltable with the environment manager the human chose, using the Environment section of the README, if `pxt --version` is not already 0.7.10 in this project.
+1. Install Pixeltable with the environment manager the human chose, using the Environment section of the README, if `pxt --version` is not already 0.7.12 in this project.
 2. If `pyproject.toml` has no `[[tool.pixeltable.database]]` entry, run `pxt init`. That entry is the local database. Leave it unnamed.
 3. Write `app.py`.
 4. `pxt schema diff app.py /crop`
@@ -31,8 +31,9 @@ Build and run on this machine only. The target is a local catalog path, `/crop`,
 7. `pxt service update app.py /crop -f`
 8. Insert one test input and show the rows with `pxt rows /crop/<table>`.
 9. `pxt service list /crop`. Copy the `http://127.0.0.1:<port>` URL from that output. Call one route on it with no API key. Show the command and the response.
+10. From the rows and the response, name the video column and show the file path or URL for the cropped video. The human opens that path to watch it.
 
-Do not run `pxt db`. Do not pass a `pxt://` URI to any command. Do not create an API key. Stop and show the local URL, the curl, and the rows.
+Do not run `pxt db`. Do not pass a `pxt://` URI to any command. Do not create an API key. Stop and show the local URL, the curl, the rows, and the path or URL of the cropped video.
 
 ## Phase 3. Cloud
 
@@ -71,4 +72,4 @@ Then run these commands, in this order. Pass `-f` on `pxt db update` and `pxt se
 
 Copy the service URL from `pxt service list`. Do not invent the hostname. A call to that URL needs the human's key in the `X-api-key` header. A call with no key returns 401. Ask the human for the key, or ask them to run `pxt key create`. If they have not given you a key, show the curl with a placeholder and say the call was not made.
 
-Stop. Report the local URL, the cloud URL, both curls, and the rows.
+Stop. Report the local URL, the cloud URL, both curls, the rows, and the path or URL of the cropped video in each place.
