@@ -1,26 +1,24 @@
 # pxt-champs
 
-Pixeltable is an OLTP database for multimodal AI. Your media, the AI outputs you derive from it, and
-your app's state live in one database that keeps them consistent as data changes. You declare a schema,
-insert data, and query it — like any database, but one that stores multimodal data and orchestrates the
-models and transforms that populate it.
+Pixeltable is a database for AI apps. Your media, the model outputs you derive from that media, and your app's state live in one database. You declare a schema, insert data, and query it. The database stores that data and runs the models and transforms that fill the computed columns.
 
-This repo is a beta-tester quickstart for **cloud-hosted tables**: the Pixeltable database you'd run
-locally, now running on hosted infrastructure and addressed by a `pxt://<your-org>:<db>` URI. Hosted, it becomes a database you can build an app on:
+This repo is a beta test of hosted tables. A hosted table is that same database on Pixeltable's infrastructure. You address it with a URI like `pxt://<your-org>:<db>`.
 
-- **serve** your tables over HTTP — built-in FastAPI routes;
-- **query and experiment** with the Pixeltable SDK, CLI, and dashboard — the same as a local database;
-- **share** one live copy with your team — concurrent reads and writes.
+## What you are building
 
-The hosted database runs on managed infrastructure that stays always on — nothing for you to provision,
-scale, or operate.
+You send a title. You get back the title in capitals, a short summary, and an id the database generated.
+
+```json
+{"id": "<generated>", "title_upper": "HELLO", "summary": "hello"}
+```
+
+You see that response on your own machine first. That call needs no account and no API key. The quickstart then deploys the same app. A `pxt login` session is enough for that deploy. You do not need an API key until you call the hosted URL over HTTP. The first image build takes several minutes.
 
 ## Environment
 
-Requires **Python 3.11+** and **`pixeltable[serve]` 0.7.10** (this repo pins it). Pixeltable pulls
-~500MB, so install ahead of time.
+You need Python 3.11 or newer, and `pixeltable[serve]` 0.7.10. This repo pins that version. The install is about 500MB, so do it before you start the guide.
 
-**For the quickstart** — install [uv](https://docs.astral.sh/uv/), then clone this repo:
+For the quickstart, install [uv](https://docs.astral.sh/uv/), then clone this repo:
 
 ```bash
 git clone https://github.com/apreshill/pxt-champs && cd pxt-champs
@@ -30,8 +28,7 @@ source .venv/bin/activate
 
 That activates this project's environment in the current shell, so `pxt` and `python` are the ones just installed. A new shell needs `source .venv/bin/activate` again.
 
-**For your own app** — start a fresh project (any manager below; `pixeltable` must be a dependency, and
-the project needs a lockfile at its root, since `pxt db update` builds the hosted image from it):
+For your own app, start a fresh project. Any manager in the table works. `pixeltable` has to be a dependency. The project needs a lockfile at its root, because `pxt db update` builds the hosted image from that file.
 
 
 | manager          | commands                                                                                                                       | lockfile           |
@@ -41,47 +38,40 @@ the project needs a lockfile at its root, since `pxt db update` builds the hoste
 | conda            | `conda create -n app python=3.12 -y && conda activate app && pip install 'pixeltable[serve]' && pip freeze > requirements.txt` | `requirements.txt` |
 
 
-Make sure `pxt` resolves to the one you installed (`which pxt`); another venv or conda base on PATH
-can shadow it. Confirm the version:
+Make sure `pxt` resolves to the one you installed (`which pxt`). Another venv or conda base on PATH can shadow it. Confirm the version.
 
 ```bash
 pxt --version    # pxt 0.7.10
 ```
 
-## API key
+## Sign in
 
-Get your Pixeltable API key from the Cloud dashboard: https://www.pixeltable.com/dashboard
-- If you don't have an account, choose a way to sign up; if you do, you can sign in from the same page
-- Create a new key that starts with `'sk_…'`
+Do this when the quickstart tells you to deploy. The first half of the quickstart runs on your machine and does not need an account.
 
-Store your API key one of two ways:
-
-**In a config file** — `~/.pixeltable/config.toml`:
-
-```toml
-[pixeltable]
-api_key = 'your-api-key'
-```
-
-**Per session** — `export PIXELTABLE_API_KEY=your-api-key`. Details:
-[https://docs.pixeltable.com/platform/configuration.md](https://docs.pixeltable.com/platform/configuration.md). Confirm it, and note your org slug:
+`pxt login` signs this machine in to Pixeltable Cloud. It prints a code and opens a browser, where you confirm that code.
 
 ```bash
-pxt config      # pixeltable.api_key shows <redacted>
-pxt org list    # your org slug, used in every pxt:// URI
+pxt login
+pxt whoami
+pxt org list
 ```
 
+`pxt org list` prints your org slug as the first word. You use that word in every `pxt://` URI. `pxt whoami` does not print the slug.
 
+If `pxt login` says there is no organization yet, create one. The name you pass is that org slug. This also creates your first database, `main`.
+
+```bash
+pxt org create <your-org>
+```
+
+The session stays on this machine, and later commands renew it. `pxt logout` forgets it. That session is enough to deploy. An API key in `~/.pixeltable/config.toml` or in `PIXELTABLE_API_KEY` is used instead of the session when one is set. The environment variable wins. If `pxt whoami` says the commands use that key, you are signed in that way.
+
+Create an API key only when a program calls the hosted URL. The quickstart does that last. The header on that call is `X-api-key`.
 
 ## Pick your path
 
-- **Try it yourself** — `guides/quickstart.md`. Create a cloud database, declare a table, insert a row,
-  and serve it over HTTP. No agent, no provider API keys, no model downloads (the first build takes a
-  few minutes).
-- **Build a real app with your coding agent** — `guides/build-an-app.md`. A guide to building a real
-  application — a video autocropper, or your own — with your agent doing the work.
-
-
+- **Try it yourself.** `guides/quickstart.md` gets the response above from your machine, then deploys the same app to `main`. You do not need a model provider key.
+- **Build a real app with your coding agent.** `guides/build-an-app.md` is a video autocropper, or your own app. Do the quickstart first. Your agent does the work. You are working toward a URL that returns a cropped video.
 
 ## Links
 

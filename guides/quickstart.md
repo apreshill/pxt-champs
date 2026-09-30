@@ -1,173 +1,133 @@
-# Quickstart: build and serve a cloud-hosted table
+# Quickstart
 
-Cloud-hosted tables run a Pixeltable database on hosted infrastructure, addressed by a `pxt://` URI
-instead of a local path. In this quickstart you create one, declare a table, insert a row the database
-computes a column from, and serve the table over HTTP. No agent, no provider API keys, no model
-downloads.
+You send a title. You get back the title in capitals, a short summary, and an id the database generated.
 
-This assumes you finished the README setup: this repo cloned, dependencies installed, and your
-Pixeltable API key set (in `~/.pixeltable/config.toml` or the `PIXELTABLE_API_KEY` environment
-variable).
-
-The commands below assume the environment from the README setup is active (`source .venv/bin/activate`
-for this repo). Then `pxt` and `python` are the ones that project installed. A new shell needs that
-`source` again.
-
-Two kinds of code appear below:
-
-1. **CLI commands** run in your shell as `pxt <noun> <verb>` (like `pxt schema update`), in `bash` blocks.
-2. **SDK code** is Python in a `.py` file, `pxt.<call>(...)` (like `pxt.get_table(...)`), in `python` blocks.
-
-One name is yours to fill in — `<your-org>`, your org slug. The rest are example names.
-
-Check your key, and note your org slug (you use it below):
-
-```bash
-pxt config      # pixeltable.api_key shows <redacted>
-pxt org list    # the first word is your org slug; you put it in the database name in step 2
+```json
+{"id": "<generated>", "title_upper": "HELLO", "summary": "hello"}
 ```
 
-## Terms
+You get that response on your machine first. That call needs no account and no API key. After you have seen it, the same `app.py` goes to a hosted database. A `pxt login` session is enough for that deploy. You do not need an API key until the last step, when you call the hosted URL. The first image build takes several minutes.
 
-**The address.** A cloud table is addressed by a URI:
+This follows the [Pixeltable Cloud guide](https://github.com/pixeltable/pixeltable/blob/main/docs/release/cloud.mdx). It assumes you finished the README install and this shell has `source .venv/bin/activate`. A new shell needs that `source` again.
 
-```
-pxt://<org>[:<db>][/<path>][:<version>]
-```
+Commands you run in the shell are in `bash` blocks. Where a command shows `<your-org>`, use the first word from `pxt org list`. Where it shows `<port>`, use the port from `pxt service list`.
 
-| part | required | what it names |
-|------|----------|---------------|
-| `<org>` | yes | your org slug, from `pxt org list` |
-| `<db>` | no | a database you name. Without it, `pxt://<org>` names the org (`pxt org status`). `pxt db list` prints every database your key reaches, and it takes no URI. |
-| `<path>` | no | a table or view in the catalog, nesting like `kb/docs`. Without it, `pxt://<org>:<db>` names the catalog root. |
-| `<version>` | no | a table's version, bumped on every write. Append `:<n>` to read version n; without it, the latest. |
+`pxt schema diff` and `pxt db diff` exit 2 when there is something to apply. That exit code is the preview.
 
-**What a database holds.** A database's contents are its catalog. From largest to smallest:
+## 1. Write the app
 
-- **database** — a Pixeltable database. A cloud-hosted one runs on hosted infrastructure at `pxt://<org>:<db>`.
-- **catalog** — the tables, views, and directories in a database. `pxt ls --tree` prints it.
-- **directory** — a namespace in the catalog that groups tables and views under a path prefix, not a
-  filesystem directory. `kb/docs` is the table `docs` under namespace `kb`.
-- **table** — rows of typed columns; some are mutable (you insert them), others the database computes
-  from the schema.
-- **view** — a table derived from a base table: a query over it, or an iterator that expands each row
-  into many (a video into frames, a document into chunks). The database keeps it current.
-
-## 1. Write the schema
-
-A schema is a file that declares your tables and their columns: some are mutable (you insert them),
-others the database computes from the schema. The example command writes a starter one:
-
-```bash
-pxt schema example                            # print a full example to read
-pxt schema example --brief --out schema.py    # --brief: minimal; --out: write to schema.py
-```
-
-Open `schema.py`:
-
-```python
-class Docs(TableModel, name='docs'):
-    id = pxt.Column(value=pxtf.uuid.uuid7(), primary_key=True)  # a generated primary key
-    title: pxt.String                         # a stored column
-    body: pxt.String | None                   # a stored column that may be null
-    title_upper = pxtf.string.upper(title)    # a computed column: an assignment, not an annotation
-
-
-class Titled(TableModel, name='titled', base=Docs.where(Docs.title != '')):
-    headline = Docs.title_upper + '!'         # a view of Docs, filtered by its base= query
-```
-
-A table's address has three parts, each from a different place:
-
-| part | from | in this example |
-|------|------|-----------------|
-| `<org>` | `pxt org list` | your org slug |
-| `<db>` | you name it in step 2 | `champs` |
-| `<path>` | each class's `name=` above | `docs`, and `titled` (the view) |
-
-So the docs table is at `pxt://<your-org>:champs/docs`. You reuse these paths in every later command.
-
-## 2. Declare the hosted database
-
-`pxt init` marks this directory as a Pixeltable project. This repo has a pyproject.toml, so it adds
-the database entry there, under `[[tool.pixeltable.database]]`. (With no pyproject.toml it writes a
-standalone `pixeltable.toml` instead.)
+One file holds the table and the HTTP routes. `title` is the value you send. `title_upper` is the title in capitals. `summary` is the start of the title. A function in the file named `excerpt` computes `summary`.
 
 ```bash
 pxt init
+pxt service example --out app.py
 ```
 
-Open pyproject.toml. `pxt init` appended an entry with no name, which is the local database. Add a
-`name` line so that entry is your hosted database. Use your org slug and a database name you pick:
+This repo has a `pyproject.toml`, so `pxt init` appends a database entry there and leaves the dependencies in place. It prints `wrote pyproject.toml`. That entry is the local database. Leave it unnamed.
+
+## 2. See the response on your machine
+
+`/hello` is a directory in your local catalog. If you already have one with that name, pick another word and use it in place of `hello` below.
+
+```bash
+pxt schema diff   app.py /hello
+pxt schema update app.py /hello
+pxt service update app.py /hello -f
+pxt service list  /hello
+```
+
+`schema diff` exits 2. `schema update` creates `hello/docs`. `service update` starts the service on this machine. `-f` skips the confirmation prompt.
+
+`service list` prints a line like `http://127.0.0.1:<port>`. Copy that URL and add `/docs`. This call has no key.
+
+```bash
+curl -sS -X POST http://127.0.0.1:<port>/docs \
+  -H 'Content-Type: application/json' \
+  -d '{"title": "hello", "body": null}'
+```
+
+The response is the JSON at the top of this guide. `id` is a key the database generated. You did not send it.
+
+Read the row back:
+
+```bash
+pxt rows /hello/docs
+```
+
+You can stop here. You have seen what happens when you send a title. The rest puts this same `app.py` on a hosted database.
+
+## 3. Sign in
+
+A login session is enough for the deploy. You do not need an API key yet.
+
+Follow the Sign in section in the README. Then confirm:
+
+```bash
+pxt whoami
+pxt org list
+```
+
+The org slug is the first word of `pxt org list`. If you have no organization, create one. The name you pass is the slug, and the command also creates your first database, `main`.
+
+```bash
+pxt org create <your-org>
+```
+
+If `pxt whoami` says the commands use an API key from the config file or from `PIXELTABLE_API_KEY`, that key is used instead of the login session. You can still deploy.
+
+## 4. Add the hosted database
+
+Keep the local entry from `pxt init`. Add a second entry for the hosted database. In this repo the section name is `tool.pixeltable.database`.
 
 ```toml
 [[tool.pixeltable.database]]
-name = 'pxt://<your-org>:champs'
+name = 'pxt://<your-org>:main'
 ```
 
-## 3. Create the database
+`main` is the database from `pxt org create`. The commands below use that name.
 
-This creates the database and builds its hosted image from your project's lockfile — it installs your
-dependencies into the image, so the first build takes several minutes.
+## 5. Upload the project
+
+`pxt db update` uploads this project onto `main` and updates its image. It does not insert a row, and it does not start HTTP.
+
+The image is the Python environment. That is your dependencies, the Python version, and any system packages. The first build takes several minutes. The command prints a plan, then waits, then prints `applied`. A later edit to `app.py` is an upload. It does not rebuild the image, unless a dependency, the Python version, or a system package changed.
 
 ```bash
-pxt db diff   pxt://<your-org>:champs       # read-only: shows the create plan
-pxt db update pxt://<your-org>:champs -f    # applies it; -f skips the confirmation prompt
+pxt db diff   pxt://<your-org>:main
+pxt db update pxt://<your-org>:main
 ```
 
-`db diff` exits 2 when there is something to apply. That is the preview, not a failure. The first time, the plan
-says the database will be created, the image will be rebuilt, and the project will be uploaded:
+`db diff` exits 2 when there is something to apply. `db update` asks you to confirm.
 
-```
-+ pxt://<your-org>:champs      will be created  absent
-    the image will be rebuilt from the project environment  [additive]
-    the project will be uploaded  [additive]
-
-Plan: 2 change(s), 0 destructive
-```
-
-`db update` does that work. The image rebuild is the slow part, and the first one takes several minutes.
-Later updates upload changed files without a rebuild, unless a dependency, the Python version, or a system
-package changed.
-
-Confirm the database is live. The first line shows the name and `AVAILABLE`:
+Confirm the database before you continue.
 
 ```bash
-pxt db status pxt://<your-org>:champs
+pxt db status pxt://<your-org>:main
 ```
 
-## 4. Create the tables
+Go on when the first line shows the name and `AVAILABLE`. A later line may still say the project upload is pending. You can create the table while that line is pending.
+
+## 6. Create the table and start HTTP
+
+`pxt schema update` creates the table. It does not start HTTP. `pxt service update` starts the hosted routes. `pxt service run` only starts routes in your local terminal, so the cloud command is `pxt service update`.
 
 ```bash
-pxt schema diff   schema.py pxt://<your-org>:champs    # read-only: what update will create
-pxt schema update schema.py pxt://<your-org>:champs    # creates the tables
+pxt schema update app.py pxt://<your-org>:main
+pxt service update app.py pxt://<your-org>:main
+pxt service list  pxt://<your-org>:main
 ```
 
-`schema update` prints:
+`service list` prints the service URL and its routes. Copy that URL. It looks like `https://<your-org>-main.svc.pxt.run/ingest`. The insert route is `/docs` on that URL.
 
-```
-created   pxt://<your-org>:champs/docs
-created   pxt://<your-org>:champs/titled
-```
+## 7. Insert a row
 
-Confirm the tables and their columns:
-
-```bash
-pxt ls --tree pxt://<your-org>:champs
-pxt describe   pxt://<your-org>:champs/docs
-```
-
-## 5. Insert a row
-
-The CLI reconciles and inspects tables, but it cannot write rows. That is the SDK's job. Save this as
-`insert.py`, set `<your-org>`, and run it. You do not pass `id`. The database generates it, computes
-`title_upper`, and stores both.
+The login session is enough for this. Save it as `insert.py`, set `<your-org>`, and run it. You do not pass `id`.
 
 ```python
 import pixeltable as pxt
 
-docs = pxt.get_table('pxt://<your-org>:champs/docs')   # set <your-org>
-docs.insert([{'title': 'hello world', 'body': 'a first doc'}])
+docs = pxt.get_table('pxt://<your-org>:main/docs')
+docs.insert(title='Hello', body='world')
 print(docs.select(docs.title, docs.title_upper).collect())
 ```
 
@@ -175,62 +135,29 @@ print(docs.select(docs.title, docs.title_upper).collect())
 python insert.py
 ```
 
-It prints the row with the computed `title_upper='HELLO WORLD'`. Or read the rows from the CLI:
+The result includes `Hello` and `HELLO`. You can also insert from the [Cloud dashboard](https://www.pixeltable.com/dashboard).
+
+## 8. Call the hosted service
+
+An API key is for this call. It is also what a backend or a CI job uses. Keep the key out of browser code. If a web page needs the service, the page calls your backend, and the backend sends the key.
+
+If you do not have a key yet, create one. The command prints the secret once. `pxt key list` shows the name and cannot show the secret again. A key created without `--grant` acts as you.
 
 ```bash
-pxt rows pxt://<your-org>:champs/docs
+pxt key create my-app
 ```
 
-## 6. Browse the table
-
-Open the dashboard to browse the table and its computed column.
+Copy the service URL from `pxt service list`. Send the key in `X-api-key`.
 
 ```bash
-pxt dashboard
+export PIXELTABLE_API_KEY='your-key'
+SERVICE_URL='URL from pxt service list'
+curl -X POST "$SERVICE_URL/docs" \
+  -H "X-api-key: $PIXELTABLE_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{"title": "Hello from HTTP", "body": "world"}'
 ```
 
-## 7. Serve a table as an API
-
-A **service** turns a table into an HTTP API: routes clients call to insert or query it over the
-network, without the SDK. `pxt service example` writes an app.py with a table plus a service:
-
-```bash
-pxt service example --out app.py    # a table and an `ingest` service
-```
-
-app.py declares its own table, also named `docs`, which collides with the `docs` you built in steps
-1–4. Rename it: in app.py, change `name='docs'` to `name='submissions'`. The service is named `ingest`,
-with three routes over `submissions`:
-
-- `POST /docs` inserts a row from `title` and `body`, and returns the generated `id` plus `title_upper` and `summary`.
-- `POST /docs/update` matches a row by `id` and rewrites `title`.
-- `POST /titles` returns `title_upper` for a title without storing a row.
-
-`app.py` defines its own function, `excerpt`, and the hosted database runs that function from the
-project files. Upload them before you create the table. This does not rebuild the image, because the
-dependencies did not change.
-
-```bash
-pxt db update     pxt://<your-org>:champs -f
-pxt schema update app.py pxt://<your-org>:champs
-pxt service update app.py pxt://<your-org>:champs -f    # -f skips the confirmation prompt
-pxt service list  pxt://<your-org>:champs               # prints the service URL and routes
-```
-
-Copy the `POST /docs` URL from that output and call it. The host is `https://<your-org>-champs.svc.pxt.run`
-and the insert path is `/ingest/docs`:
-
-```bash
-curl -X POST https://<your-org>-champs.svc.pxt.run/ingest/docs \
-  -H 'Content-Type: application/json' -d '{"title": "hello", "body": null}'
-```
-
-The response is the route's outputs, filled in by the database:
-
-```json
-{"id": "<generated>", "title_upper": "HELLO", "summary": "hello"}
-```
-
-From one schema, the same computed columns reach you three ways: the SDK, the CLI, and now this API.
+A call with no key returns 401. The response has the same fields as the local call. `title_upper` is `HELLO`. `summary` is the start of the title, from `excerpt`. `id` is generated.
 
 To build a real application with your coding agent, see `build-an-app.md`.

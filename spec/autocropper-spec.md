@@ -21,20 +21,24 @@ around that. Three inputs — the source **video**, a free-text **product** desc
 
 - Ask me which environment manager to use (uv, venv, conda), then follow that option in the
   README's Environment section. Do not assume.
-- Confirm my Pixeltable API key with `pxt config` (`pixeltable.api_key` shows `<redacted>`), and get my
-  org slug from `pxt org list`. Use that slug in every `pxt://` URI, and never touch a database you did
-  not create.
+- Confirm this machine is signed in with `pxt whoami`. If it says not signed in, stop and ask me to run
+  `pxt login` (a browser confirmation). Do not run `pxt login` yourself. A login session is enough to deploy. Do not create an API key unless I ask.
+- Get my org slug from `pxt org list`. The first word is the slug. `pxt whoami` does not print it. Use that slug in every `pxt://` URI.
+- Keep the local database entry from `pxt init`. Add a second `[[tool.pixeltable.database]]` entry for the hosted database. Do not put the hosted name on the local entry.
+- Use `pxt://<org>:main` when `main` is the empty database from `pxt org create`. If `main` already has another project, use a new database name. Never run `pxt db update` against a database you did not create for this app.
 
 ## Report back to me
 
 - What you built: the tables, computed columns, endpoints.
-- The local URL and the cloud URL, each with one working `curl` call and its output.
+- The local URL and the cloud URL from `pxt service list`. The local curl needs no key. The cloud curl needs `X-api-key`. Ask me for that key, or ask me to run `pxt key create`. If I have not given you a key, show the curl with a placeholder and say the call was not made. Do not invent a hostname.
 - Anything that errored, surprised you, or contradicted the docs, with the exact command and output.
   Be honest; a run where things broke is more useful than a tidy summary that hides it.
 
 ## Rules
 
-- Only my org and the key in `~/.pixeltable/config.toml`. Do not create or use any other org.
-- Non-interactive only: `pxt service update` and `pxt db update` prompt, so always pass `-f`. No editors,
-  no `login` flows. Skip and tell me if a step needs interactive input.
+- Only the org from `pxt org list`. Do not create another org, and do not read or write
+  `~/.pixeltable/config.toml`.
+- Order on a hosted target is `pxt db update`, then `pxt schema update`, then `pxt service update`. `pxt service run` is local only.
+- Non-interactive after sign-in: `pxt service update` and `pxt db update` prompt, so always pass `-f`.
+  No editors. `pxt login` is the one step that needs me, unless I still need to create or paste an API key for the hosted curl. Skip and tell me if any other step needs interactive input.
 - You are a user of the released `pixeltable` 0.7.10. Report bugs, do not patch its source.
